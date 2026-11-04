@@ -1,29 +1,393 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>CampusConnect</title>
-    </head>
-    <body>
-        <nav>
-            {% if user.is_authenticated %}
-                Hi, {{ user.username }}!
-                <a href="{% url 'profile' %}">Edit profile</a>
-                <form method="post" action="{% url 'logout' %}">
-                    {% csrf_token %}
-                    <button type="submit">Log out</button>
-                </form>
-            {% else %}
-                <a href="{% url 'login' %}">Log in</a>
-                <a href="{% url 'signup' %}">Sign up</a>
-            {% endif %}    
-        </nav>
-        <main>
-            {% if messages %}
-                {% for message in messages %}
-                    <p class="message {{ message.tags }}" role="status">{{ message }}</p>
-                {% endfor %}
-            {% endif %}
-            {% block content %}{% endblock %}
-        </main>
-    </body>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}CampusConnect{% endblock %}</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+  <style>
+    :root {
+      --cc-navy: #142b49;
+      --cc-blue: #315fce;
+      --cc-ink: #26384d;
+      --cc-muted: #718198;
+      --bs-primary: var(--cc-blue);
+      --bs-primary-rgb: 49, 95, 206;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      color: var(--cc-ink);
+      background:
+        radial-gradient(ellipse at 8% 0%, #e8f0ff 0, transparent 34rem),
+        linear-gradient(180deg, #f8faff 0%, #f3f6fb 48%, #f8f9fc 100%);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .navbar {
+      background: linear-gradient(110deg, #112640, #1a385c);
+      box-shadow: 0 8px 28px #142b491c;
+    }
+
+    .navbar-brand {
+      font-weight: 750;
+      letter-spacing: -.5px;
+    }
+
+    .brand-mark {
+      display: inline-grid;
+      width: 36px;
+      height: 36px;
+      margin-right: 8px;
+      place-items: center;
+      border: 1px solid #ffffff35;
+      border-radius: 12px;
+      background: linear-gradient(145deg, #edf4ff, #b9d1ff);
+      color: var(--cc-navy);
+      font-size: 15px;
+      box-shadow: 0 3px 10px #08182a40;
+    }
+
+    .nav-link {
+      padding-inline: 14px !important;
+      border-radius: 9px;
+      color: #d3deec;
+      transition: background-color .18s ease, color .18s ease;
+    }
+
+    .navbar .nav-link:hover,
+    .navbar .nav-link.active {
+      background: #ffffff18;
+      color: #fff;
+    }
+
+    .card {
+      overflow: hidden;
+      border: 1px solid #e2e9f3;
+      border-radius: 18px;
+      background: #ffffffed;
+      box-shadow: 0 10px 32px #1a35520b, 0 2px 6px #1a355208;
+      transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+    }
+
+    .eyebrow {
+      color: #5275a2;
+      font-size: .73rem;
+      font-weight: 750;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    h1, h2, h3 {
+      color: var(--cc-navy);
+      letter-spacing: -.035em;
+    }
+
+    h1 {
+      font-weight: 760;
+    }
+
+    .hero {
+      position: relative;
+      isolation: isolate;
+      overflow: hidden;
+      border: 1px solid #25456a;
+      border-radius: 22px;
+      background: linear-gradient(118deg, #142b49 0%, #1b3d68 58%, #315c91 100%);
+      color: #e5eef9;
+      box-shadow: 0 18px 40px #142b4926;
+    }
+
+    .hero::before,
+    .hero::after {
+      position: absolute;
+      z-index: -1;
+      border: 1px solid #ffffff16;
+      border-radius: 50%;
+      content: "";
+      pointer-events: none;
+    }
+
+    .hero::before {
+      top: -150px;
+      right: -40px;
+      width: 360px;
+      height: 360px;
+      background: radial-gradient(circle, #8cb8f522 0, transparent 68%);
+      box-shadow: 0 0 0 34px #ffffff08, 0 0 0 70px #ffffff05;
+    }
+
+    .hero::after {
+      right: 18%;
+      bottom: -180px;
+      width: 300px;
+      height: 300px;
+      background: #77a7e00d;
+    }
+
+    .hero > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero h1,
+    .hero h2 {
+      color: #fff;
+    }
+
+    .hero .eyebrow {
+      color: #b8d2f3;
+    }
+
+    .btn {
+      padding: .68rem 1.1rem;
+      border-radius: 10px;
+      font-weight: 650;
+      transition: transform .18s ease, box-shadow .18s ease, background-color .18s ease;
+    }
+
+    .btn-primary {
+      --bs-btn-bg: var(--cc-blue);
+      --bs-btn-border-color: var(--cc-blue);
+      --bs-btn-hover-bg: #244eae;
+      --bs-btn-hover-border-color: #244eae;
+      --bs-btn-active-bg: #20469c;
+      --bs-btn-active-border-color: #20469c;
+      box-shadow: 0 4px 12px #315fce30;
+    }
+
+    .form-control,
+    .form-select {
+      padding: .78rem .9rem;
+      border-color: #d5deea;
+      border-radius: 10px;
+      background-color: #fff;
+      transition: border-color .18s ease, box-shadow .18s ease;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+      border-color: #88a6e8;
+      box-shadow: 0 0 0 .22rem #315fce20;
+    }
+
+    .form-label {
+      color: #354a63;
+    }
+
+    .form-text {
+      color: var(--cc-muted);
+      font-size: .8rem;
+    }
+
+    .form-text ul,
+    .invalid-feedback ul,
+    .alert ul {
+      margin-bottom: 0;
+      padding-left: 1.2rem;
+    }
+
+    .stat-label {
+      margin-bottom: .6rem;
+      color: #78889d;
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: .09em;
+      text-transform: uppercase;
+    }
+
+    .stat-value {
+      overflow-wrap: anywhere;
+      color: var(--cc-navy);
+      font-size: 1.15rem;
+      font-weight: 720;
+    }
+
+    .stat-card {
+      position: relative;
+    }
+
+    .stat-card::after {
+      position: absolute;
+      top: 0;
+      left: 1.5rem;
+      width: 38px;
+      height: 3px;
+      border-radius: 0 0 4px 4px;
+      background: linear-gradient(90deg, #315fce, #8eb3fa);
+      content: "";
+    }
+
+    .avatar {
+      display: grid;
+      width: 62px;
+      height: 62px;
+      flex-shrink: 0;
+      place-items: center;
+      border: 1px solid #d5e2fb;
+      border-radius: 19px;
+      background: linear-gradient(145deg, #f1f5ff, #dce8ff);
+      color: var(--cc-blue);
+      font-size: 1.6rem;
+      font-weight: 750;
+      box-shadow: inset 0 1px 0 #fff;
+    }
+
+    .soft-badge {
+      border: 1px solid #dce7fb;
+      background: #eff4ff;
+      color: #315fbd;
+    }
+
+    .auth-wrap {
+      max-width: 1000px;
+      margin: auto;
+    }
+
+    .feature-number {
+      color: #b8d2f3;
+      font-size: .8rem;
+      letter-spacing: .1em;
+    }
+
+    .auth-art {
+      position: relative;
+      isolation: isolate;
+      min-height: 100%;
+      overflow: hidden;
+      border: 1px solid #25456a;
+      border-radius: 20px;
+      background: linear-gradient(145deg, #142b49, #1e4777);
+      box-shadow: 0 18px 40px #142b4926;
+    }
+
+    .auth-art::after {
+      position: absolute;
+      z-index: -1;
+      right: -90px;
+      bottom: -130px;
+      width: 330px;
+      height: 330px;
+      border: 1px solid #ffffff18;
+      border-radius: 50%;
+      background: radial-gradient(circle, #90b8ee20 0, transparent 68%);
+      box-shadow: 0 0 0 30px #ffffff08, 0 0 0 64px #ffffff05;
+      content: "";
+      pointer-events: none;
+    }
+
+    .auth-art p {
+      color: #c9d7e8;
+    }
+
+    .auth-art h2 {
+      color: #fff;
+    }
+
+    .alert {
+      border: 1px solid transparent;
+      border-radius: 12px;
+      box-shadow: 0 4px 14px #1a35520a;
+    }
+
+    .skip-link {
+      position: absolute;
+      z-index: 2000;
+      top: -70px;
+    }
+
+    .skip-link:focus {
+      top: 8px;
+      left: 8px;
+    }
+
+    a:not(.btn):not(.navbar-brand) {
+      text-underline-offset: .2em;
+    }
+
+    footer {
+      color: #78889d;
+      font-size: .8rem;
+    }
+
+    .text-break-anywhere {
+      overflow-wrap: anywhere;
+    }
+
+    :focus-visible {
+      outline: 3px solid #8daef0;
+      outline-offset: 3px;
+    }
+
+    @media (hover: hover) {
+      .card:hover {
+        transform: translateY(-2px);
+        border-color: #d5e0ef;
+        box-shadow: 0 15px 38px #1a355214, 0 3px 8px #1a35520a;
+      }
+
+      .btn:hover {
+        transform: translateY(-1px);
+      }
+    }
+
+    @media (max-width: 575px) {
+      .hero {
+        border-radius: 16px;
+      }
+
+      h1 {
+        font-size: 1.8rem;
+      }
+
+      .card {
+        border-radius: 15px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        transition-duration: .01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link btn btn-light" href="#main-content">Skip to content</a>
+<nav class="navbar navbar-expand-lg navbar-dark py-3" aria-label="Main navigation">
+  <div class="container">
+    <a class="navbar-brand" href="{% url 'dashboard' %}"><span class="brand-mark" aria-hidden="true">CC</span>CampusConnect</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+    <div class="collapse navbar-collapse" id="mainNav">
+      <div class="navbar-nav ms-auto align-items-lg-center gap-2 mt-3 mt-lg-0">
+        {% if user.is_authenticated %}
+          <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}">Dashboard</a>
+          <a class="nav-link {% if request.resolver_match.url_name == 'profile' %}active{% endif %}" href="{% url 'profile' %}">My profile</a>
+          {% if user.role == 'ADMIN' %}<a class="nav-link {% if request.resolver_match.url_name == 'admin_panel' %}active{% endif %}" href="{% url 'admin_panel' %}">Admin panel</a>{% endif %}
+          <form method="post" action="{% url 'logout' %}" class="ms-lg-2">{% csrf_token %}<button class="btn btn-outline-light btn-sm" type="submit">Log out</button></form>
+        {% else %}
+          <a class="nav-link {% if request.resolver_match.url_name == 'login' %}active{% endif %}" href="{% url 'login' %}">Log in</a>
+          <a class="btn btn-light btn-sm ms-lg-2" href="{% url 'signup' %}">Create account <span aria-hidden="true">&rarr;</span></a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</nav>
+<main class="container py-4 py-lg-5 flex-grow-1" id="main-content">
+  {% if messages %}{% for message in messages %}
+  <div class="alert {% if message.level == 40 %}alert-danger{% elif message.level == 30 %}alert-warning{% elif message.level == 25 %}alert-success{% else %}alert-info{% endif %} alert-dismissible fade show mb-4" role="status">
+    {{ message }}<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Dismiss message"></button>
+  </div>
+  {% endfor %}{% endif %}
+  {% block content %}{% endblock %}
+</main>
+<footer class="container py-4 border-top d-flex flex-wrap justify-content-between gap-2"><span class="fw-semibold">CampusConnect</span><span>Your campus. Your connection.</span></footer>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+</body>
 </html>

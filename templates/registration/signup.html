@@ -1,10 +1,8 @@
 {% extends 'base.html' %}
-
+{% block title %}Create account · CampusConnect{% endblock %}
 {% block content %}
-  <h2>Create your account</h2>
-  <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Sign up</button>
-  </form>
+<div class="row g-4 justify-content-center">
+  <div class="col-lg-4"><div class="pt-lg-4"><p class="eyebrow">Join your campus community</p><h1 class="display-6 mb-3">Your connection<br>starts here.</h1><p class="text-secondary">Create your account and make CampusConnect your own.</p><div class="card mt-4"><div class="card-body p-4"><h2 class="h6">A profile that’s yours</h2><p class="small text-secondary mb-0">Add your name and course now, or update your details later from your profile.</p></div></div></div></div>
+  <div class="col-lg-7 col-xl-6"><section class="card"><div class="card-body p-4 p-sm-5"><h2 class="h3 mb-2">Create your account</h2><p class="text-secondary small mb-4">Fields marked <span class="text-danger">*</span> are required.</p><form method="post">{% csrf_token %}{% include 'includes/form_fields.html' %}<button class="btn btn-primary w-100" type="submit">Create account <span aria-hidden="true">&rarr;</span></button></form><p class="small text-secondary text-center mt-4 mb-0">Already have an account? <a class="fw-semibold" href="{% url 'login' %}">Log in</a></p></div></section></div>
+</div>
 {% endblock %}

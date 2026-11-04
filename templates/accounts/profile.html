@@ -1,10 +1,8 @@
-{% extends "base.html" %}
-
+{% extends 'base.html' %}
+{% block title %}My profile · CampusConnect{% endblock %}
 {% block content %}
-  <h2>Edit your profile</h2>
-  <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Save changes</button>
-  </form>
+<a class="small text-decoration-none" href="{% url 'dashboard' %}"><span aria-hidden="true">&larr;</span> Back to dashboard</a>
+<div class="mt-4 mb-4"><p class="eyebrow">Account settings</p><h1 class="mb-2">Make yourself at home.</h1><p class="text-secondary">Keep your campus profile up to date.</p></div>
+<div class="row g-4"><aside class="col-lg-4"><div class="card"><div class="card-body p-4"><div class="avatar mb-3" aria-hidden="true">{{ user.username|first|upper }}</div><h2 class="h4 text-break-anywhere">{{ user.get_full_name|default:user.username }}</h2><p class="text-secondary text-break-anywhere">@{{ user.username }}</p><span class="badge soft-badge rounded-pill px-3 py-2">{{ user.get_role_display }}</span><hr class="my-4"><p class="stat-label mb-1">Member since</p><p class="fw-semibold mb-0">{{ user.date_joined|date:"F Y" }}</p></div></div></aside>
+<section class="col-lg-8"><div class="card"><div class="card-body p-4 p-sm-5"><h2 class="h4">Profile details</h2><p class="text-secondary small mb-4">Fields marked <span class="text-danger">*</span> are required.</p><form method="post">{% csrf_token %}{% include 'includes/form_fields.html' %}<div class="d-flex flex-wrap gap-2 border-top pt-4"><button class="btn btn-primary" type="submit">Save changes</button><a class="btn btn-outline-secondary" href="{% url 'dashboard' %}">Cancel</a></div></form></div></div></section></div>
 {% endblock %}

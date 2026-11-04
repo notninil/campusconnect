@@ -1,0 +1,13 @@
+{% load bootstrap_forms %}
+{% if form.non_field_errors %}
+<div class="alert alert-danger" role="alert">{{ form.non_field_errors }}</div>
+{% endif %}
+{% for hidden in form.hidden_fields %}{{ hidden }}{{ hidden.errors }}{% endfor %}
+{% for field in form.visible_fields %}
+<div class="mb-4">
+  <label class="form-label fw-semibold" for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %}<span class="text-danger ms-1" aria-hidden="true">*</span>{% else %}<span class="text-secondary fw-normal small ms-1">(optional)</span>{% endif %}</label>
+  {{ field|bootstrap_field }}
+  {% if field.help_text %}<div class="form-text" id="{{ field.auto_id }}_helptext">{{ field.help_text|safe }}</div>{% endif %}
+  {% if field.errors %}<div class="invalid-feedback d-block" id="{{ field.auto_id }}_errors">{{ field.errors }}</div>{% endif %}
+</div>
+{% endfor %}

@@ -1,14 +1,14 @@
-{% extends "base.html" %}
-
+{% extends 'base.html' %}
+{% block title %}Dashboard · CampusConnect{% endblock %}
 {% block content %}
-<h2>Welcome, {{ user.first_name|default:user.username }}!</h2>
-<ul>
-    <li>Role: {{ user.get_role_display }}</li>
-    <li>Course: {{ user.course|default:"Not set" }}</li>
-    <li>Member Since: {{ member_count }}</li>
-    <li>Last Login: {{ user.last_login|date:"M d, Y" }}</li>
-</ul>
-{% if is_admin %}
-    <a href="{% url 'admin_panel' %}">Open Admin Panel</a>
-{% endif %}
+<section class="hero p-4 p-lg-5 mb-4"><div class="row g-4 align-items-center"><div class="col-md-9"><p class="eyebrow">Your campus dashboard</p><h1 class="display-6 text-break-anywhere">Welcome, {{ user.first_name|default:user.username }}!</h1><p class="mb-0 mt-3">A little more connected. A little more at home.</p></div><div class="col-md-3 text-md-end"><a class="btn btn-light" href="{% url 'profile' %}">Edit profile <span aria-hidden="true">&rarr;</span></a></div></div></section>
+<div class="row g-3 mb-5">
+  <div class="col-sm-6 col-xl-3"><div class="card stat-card h-100"><div class="card-body p-4"><p class="stat-label">Your role</p><p class="stat-value mb-0">{{ user.get_role_display }}</p></div></div></div>
+  <div class="col-sm-6 col-xl-3"><div class="card stat-card h-100"><div class="card-body p-4"><p class="stat-label">Your course</p><p class="stat-value mb-0">{{ user.course|default:"Not set yet" }}</p></div></div></div>
+  <div class="col-sm-6 col-xl-3"><div class="card stat-card h-100"><div class="card-body p-4"><p class="stat-label">Campus members</p><p class="stat-value mb-0">{{ member_count }}</p></div></div></div>
+  <div class="col-sm-6 col-xl-3"><div class="card stat-card h-100"><div class="card-body p-4"><p class="stat-label">Last login</p><p class="stat-value mb-0">{{ user.last_login|date:"M d, Y"|default:"First visit" }}</p></div></div></div>
+</div>
+<div class="mb-3"><p class="eyebrow mb-2">Your space</p><h2 class="h4">A good place to start</h2></div>
+<div class="row g-4"><div class="col-lg-7"><section class="card h-100"><div class="card-body p-4"><div class="d-flex align-items-center gap-3 mb-4"><div class="avatar" aria-hidden="true">{{ user.username|first|upper }}</div><div class="text-break-anywhere"><h3 class="h5 mb-1">{{ user.get_full_name|default:user.username }}</h3><span class="text-secondary small">@{{ user.username }}</span></div></div><dl class="row mb-4"><dt class="col-sm-4 fw-normal text-secondary">Email</dt><dd class="col-sm-8 text-break-anywhere">{{ user.email|default:"Not added yet" }}</dd><dt class="col-sm-4 fw-normal text-secondary">Member since</dt><dd class="col-sm-8">{{ user.date_joined|date:"M d, Y" }}</dd></dl><a class="btn btn-outline-primary" href="{% url 'profile' %}">Manage profile</a></div></section></div>
+<div class="col-lg-5"><section class="card h-100"><div class="card-body p-4"><span class="badge soft-badge rounded-pill mb-3">{% if is_admin %}Administrator{% else %}Your account{% endif %}</span><h3 class="h5">{% if is_admin %}Manage your campus space{% else %}Keep your details current{% endif %}</h3><p class="text-secondary">{% if is_admin %}Open your admin panel to access the administration area.{% else %}Changed your course or email? Update your profile so your account reflects you.{% endif %}</p>{% if is_admin %}<a class="btn btn-primary" href="{% url 'admin_panel' %}">Open admin panel</a>{% else %}<a class="btn btn-primary" href="{% url 'profile' %}">Update details</a>{% endif %}</div></section></div></div>
 {% endblock %}

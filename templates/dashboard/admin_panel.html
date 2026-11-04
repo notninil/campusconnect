@@ -1,5 +1,7 @@
-{%extends "base.html" %}
+{% extends 'base.html' %}
+{% block title %}Admin panel · CampusConnect{% endblock %}
 {% block content %}
-    <h2>Admin Panel</h2>
-    
+<a class="small text-decoration-none" href="{% url 'dashboard' %}"><span aria-hidden="true">&larr;</span> Back to dashboard</a>
+<section class="hero p-4 p-lg-5 my-4"><p class="eyebrow">Administration</p><h1 class="display-6">CampusConnect admin panel</h1><p class="mb-0 mt-3">Welcome, {{ user.first_name|default:user.username }}. This is your administration space.</p></section>
+<div class="row g-4"><div class="col-lg-7"><section class="card h-100"><div class="card-body p-4 p-lg-5"><span class="badge soft-badge rounded-pill mb-3">Administrator access</span><h2 class="h4">Your workspace is ready</h2><p class="text-secondary">Administrative management tools have not been added to this panel yet.</p>{% if user.is_staff %}<a class="btn btn-primary mt-2" href="{% url 'admin:index' %}">Open Django administration <span aria-hidden="true">&rarr;</span></a>{% else %}<p class="small text-secondary mb-0">Django administration requires a staff account.</p>{% endif %}</div></section></div><div class="col-lg-5"><section class="card h-100"><div class="card-body p-4 p-lg-5"><p class="eyebrow">Quick access</p><h2 class="h4 mb-3">Your account</h2><div class="d-grid gap-3"><a class="btn btn-outline-primary text-start" href="{% url 'profile' %}">Edit your profile <span class="float-end" aria-hidden="true">&rarr;</span></a><a class="btn btn-outline-secondary text-start" href="{% url 'dashboard' %}">Return to dashboard <span class="float-end" aria-hidden="true">&rarr;</span></a></div></div></section></div></div>
 {% endblock %}
